@@ -97,7 +97,7 @@ def start_gui(base_dir, output_file):
     root.geometry("600x500")
 
     # 创建树状视图
-    tree = ttk.Treeview(root)
+    tree = ttk.Treeview(root, selectmode="extended")
     tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
     # 定义图标（可选）

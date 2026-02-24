@@ -97,8 +97,39 @@ def start_gui(base_dir, output_file):
     root.geometry("600x500")
 
     # 创建树状视图
-    tree = ttk.Treeview(root, selectmode="extended")
+    tree = ttk.Treeview(root, selectmode="none")
     tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+    last_selected = None
+
+    # 绑定点击事件，实现按钮式选择，支持Shift范围
+    def on_tree_click(event):
+        nonlocal last_selected
+        item = tree.identify_row(event.y)
+        if item:
+            if event.state & 0x1:  # Shift pressed
+                if last_selected:
+                    # 范围选择
+                    items = tree.get_children()
+                    try:
+                        start_idx = items.index(last_selected)
+                        end_idx = items.index(item)
+                        if start_idx > end_idx:
+                            start_idx, end_idx = end_idx, start_idx
+                        for i in range(start_idx, end_idx + 1):
+                            tree.selection_add(items[i])
+                    except ValueError:
+                        pass
+                else:
+                    tree.selection_add(item)
+            else:
+                if item in tree.selection():
+                    tree.selection_remove(item)
+                else:
+                    tree.selection_add(item)
+            last_selected = item
+
+    tree.bind("<Button-1>", on_tree_click)
 
     # 定义图标（可选）
     tree.heading("#0", text="文件夹结构")

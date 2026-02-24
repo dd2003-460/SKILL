@@ -45,3 +45,65 @@
 1. 使用`skill-loader/batch_skill_loader.py`合并技能到`combined-skills.md`。
 2. 复制内容到AI工具的系统提示中。
 3. 参考各技能文件夹下的`README.md`获取详细使用建议。
+
+## AI工具集成指南
+
+本节详细说明如何将合并后的`combined-skills.md`集成到不同AI工具中。通用步骤：复制`combined-skills.md`的完整内容，粘贴到AI工具的系统提示字段。
+
+### 1. Ollama（本地LLM工具）
+- **步骤**：
+  1. 安装Ollama。
+  2. 创建自定义模型：运行`ollama create my-skill-model -f Modelfile`，Modelfile内容：
+     ```
+     FROM llama3.2
+     SYSTEM """
+     [粘贴combined-skills.md内容]
+     """
+     ```
+  3. 使用：`ollama run my-skill-model`，输入查询。
+- **导入区别**：需创建Modelfile定义系统提示。
+- **兼容性**：支持大多数Ollama模型；本地运行，无网络依赖。
+
+### 2. 网页AI（如ChatGPT、Claude、Gemini）
+- **步骤**：
+  1. 打开AI网页（如chat.openai.com或claude.ai）。
+  2. 新对话中，设置“自定义指令”或“系统提示”（System Prompt）。
+  3. 粘贴`combined-skills.md`内容到提示字段。
+  4. 开始对话。
+- **导入区别**：ChatGPT叫“Instructions”，Claude叫“System Prompt”。
+- **兼容性**：支持GPT-4/Claude-3等；网页版可能有长度限制，建议分批或精简。
+
+### 3. CLI工具（如OpenAI CLI、Anthropic CLI）
+- **步骤**（以OpenAI CLI为例）：
+  1. 安装CLI：`pip install openai`。
+  2. 配置API密钥。
+  3. 运行命令添加系统提示：
+     ```
+     openai api chat_completions.create -m gpt-4 --system "[粘贴combined-skills.md内容]" --message "你的查询"
+     ```
+  4. Anthropic类似，使用`--system`参数。
+- **导入区别**：命令行参数指定系统提示。
+- **兼容性**：需API密钥；支持多种模型；CLI版本差异可能影响参数。
+
+### 4. Cherry Studio（AI客户端）
+- **步骤**：
+  1. 打开Cherry Studio。
+  2. 设置 > 模型配置 > 自定义提示。
+  3. 添加新提示，粘贴`combined-skills.md`内容。
+  4. 选择模型，开始对话。
+- **导入区别**：在应用设置中配置自定义系统提示。
+- **兼容性**：支持多种AI提供商；本地和云端模型均可。
+
+### 5. 其他Agent工具（如自定义脚本或插件）
+- **步骤**：
+  1. 在Agent代码中，设置系统提示变量。
+  2. 粘贴`combined-skills.md`内容到变量。
+  3. 运行Agent。
+- **导入区别**：取决于Agent框架（如LangChain），可能需代码修改。
+- **兼容性**：灵活，但需编程知识；兼容OpenAI/Claude API。
+
+### 注意事项
+- **长度限制**：某些工具（如网页版）有提示长度上限，建议合并精简版或分技能使用。
+- **兼容性**：大多数现代AI工具支持系统提示；本地模型（如Ollama）需额外配置。
+- **测试**：集成后，从简单查询测试，确保AI遵循技能规则。
+- **更新**：新skill加入时，重新运行`batch_skill_loader.py`更新`combined-skills.md`。
